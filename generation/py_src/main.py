@@ -1,6 +1,7 @@
 import sys
 from math import floor
 from os import chdir
+from os.path import exists
 
 # simulation modeled after helium atom
 # radius = 140 pm (van der walls), 28 pm (covalent); 40 pm is the value we're going with, so 40e-12 m
@@ -12,8 +13,6 @@ lennard_jones_well_depth = 1e-32
 linear_damping_strength = 0.95 # this is basically multiplied by the velocity every nanosecond
 time_step = 1e-9
 num_steps = 1000
-csv_file_skip_steps = 10
-status_update_skip_steps = 10
 
 # change directory to program's path
 chdir(sys.path[0])
@@ -76,23 +75,50 @@ class particle:
       self.dz + ddz * time_step,
     )
 
-def populate_particles_list():
+def populate_particles_list(simulation_params_obj):
   particles = []
   
-  particle_spacing = particle_radius * 2
+  particle_spacing = simulation_params_obj.particle_radius * 2
 
-  x_span = 6
-  y_span = 6
-  z_span = 6
-  
-  for i in range(floor(-x_span / 2), floor(x_span / 2) + 1):
-    for j in range(floor(-y_span / 2), floor(y_span / 2) + 1):
-      for k in range(floor(-z_span / 2), floor(z_span / 2) + 1):
-        x = i * particle_spacing
-        y = j * particle_spacing
-        z = k * particle_spacing
-        
-        particles.append(particle(x, y, z, 0, 0, 0))
+  if simulation_params_obj.particle_configuration == 1:
+    x_span = 2
+    y_span = 2
+    z_span = 2
+    
+    for i in range(floor(-x_span / 2), floor(x_span / 2) + 1):
+      for j in range(floor(-y_span / 2), floor(y_span / 2) + 1):
+        for k in range(floor(-z_span / 2), floor(z_span / 2) + 1):
+          x = i * particle_spacing
+          y = j * particle_spacing
+          z = k * particle_spacing
+          
+          particles.append(particle(x, y, z, 0, 0, 0))
+  elif simulation_params_obj.particle_configuration == 2:
+    x_span = 2
+    y_span = 2
+    z_span = 2
+    
+    for i in range(floor(-x_span / 2), floor(x_span / 2) + 1):
+      for j in range(floor(-y_span / 2), floor(y_span / 2) + 1):
+        for k in range(floor(-z_span / 2), floor(z_span / 2) + 1):
+          x = i * particle_spacing
+          y = j * particle_spacing
+          z = k * particle_spacing
+          
+          particles.append(particle(x, y, z, particle_spacing / time_step * 0.05, 0, 0))
+  elif simulation_params_obj.particle_configuration == 3:
+    x_span = 6
+    y_span = 6
+    z_span = 6
+    
+    for i in range(floor(-x_span / 2), floor(x_span / 2) + 1):
+      for j in range(floor(-y_span / 2), floor(y_span / 2) + 1):
+        for k in range(floor(-z_span / 2), floor(z_span / 2) + 1):
+          x = i * particle_spacing
+          y = j * particle_spacing
+          z = k * particle_spacing
+          
+          particles.append(particle(x, y, z, 0, 0, 0))
   
   return tuple(particles)
 
@@ -112,6 +138,7 @@ class simulation_params:
     'linear_damping_strength',
     'time_step',
     'num_steps',
+    'particle_configuration',
     'csv_file_skip_steps',
     'status_update_skip_steps',
   )
@@ -125,8 +152,9 @@ class simulation_params:
     linear_damping_strength = linear_damping_strength,
     time_step = time_step,
     num_steps = num_steps,
-    csv_file_skip_steps = csv_file_skip_steps,
-    status_update_skip_steps = status_update_skip_steps,
+    particle_configuration = 1,
+    csv_file_skip_steps = 10,
+    status_update_skip_steps = 100
   ):
     self.particle_radius = particle_radius
     self.particle_mass = particle_mass
@@ -135,6 +163,7 @@ class simulation_params:
     self.linear_damping_strength = linear_damping_strength
     self.time_step = time_step
     self.num_steps = num_steps
+    self.particle_configuration = particle_configuration
     self.csv_file_skip_steps = csv_file_skip_steps
     self.status_update_skip_steps = status_update_skip_steps
 
@@ -250,43 +279,100 @@ if testing:
   print(particle_one.vector_away_from_other(particle_two, 2.0))
   exit()
 
-print('Creating particles...')
+def perform_simulation_run(run_number, file_name):
+  file_name_extended = f'{run_number:0>2}_{file_name}'
+  full_file_path = f'../../data/calculations_{file_name_extended}.csv'
+  
+  print(f'Simulating run {file_name_extended}...\n')
+  
+  # assume already calculated if file already exists
+  if exists(full_file_path):
+    print('Path already exists, not calculating.')
+    return
+  
+  if run_number == 1:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = 0,
+      lennard_jones_well_depth = 0,
+      linear_damping_strength = 0,
+      time_step = time_step,
+      num_steps = num_steps,
+      particle_configuration = 2,
+      csv_file_skip_steps = 10,
+      status_update_skip_steps = 100,
+    )
+  elif run_number == 2:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_strength = linear_damping_strength,
+      time_step = time_step,
+      num_steps = num_steps,
+      particle_configuration = 1,
+      csv_file_skip_steps = 10,
+      status_update_skip_steps = 100,
+    )
+  elif run_number == 3:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_strength = linear_damping_strength,
+      time_step = time_step,
+      num_steps = num_steps,
+      particle_configuration = 1,
+      csv_file_skip_steps = 10,
+      status_update_skip_steps = 100,
+    )
+  elif run_number == 4:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_strength = linear_damping_strength,
+      time_step = time_step,
+      num_steps = num_steps,
+      particle_configuration = 3,
+      csv_file_skip_steps = 10,
+      status_update_skip_steps = 100,
+    )
 
-particles = populate_particles_list()
+  print('Creating particles...')
 
-recorded_states = [
-  # array of systemstate objects go here
-]
+  particles = populate_particles_list(simulation_params_obj)
 
-print('Recording initial state...')
+  recorded_states = [
+    # array of systemstate objects will get put here
+  ]
 
-recorded_states.append(system_state(0, particles))
+  print('Recording initial state...')
 
-simulation_params_obj = simulation_params(
-  particle_radius = particle_radius,
-  particle_mass = particle_mass,
-  grav_constant = grav_constant,
-  lennard_jones_well_depth = lennard_jones_well_depth,
-  linear_damping_strength = linear_damping_strength,
-  time_step = time_step,
-  num_steps = num_steps,
-  csv_file_skip_steps = csv_file_skip_steps,
-  status_update_skip_steps = status_update_skip_steps,
-)
+  recorded_states.append(system_state(0, particles))
 
-print('Calculating...')
+  print('Calculating...')
 
-for i in range(1, num_steps // csv_file_skip_steps + 1):
-  current_time = time_step * i
-  for _ in range(csv_file_skip_steps):
-    particles = simulate_tick(particles, simulation_params_obj)
-  recorded_states.append(system_state(current_time, particles))
-  if i % (status_update_skip_steps // csv_file_skip_steps) == 0:
-    print(f'Calculated state {i * csv_file_skip_steps}/{num_steps}')
+  for i in range(1, simulation_params_obj.num_steps // simulation_params_obj.csv_file_skip_steps + 1):
+    current_time = simulation_params_obj.time_step * i
+    for _ in range(simulation_params_obj.csv_file_skip_steps):
+      particles = simulate_tick(particles, simulation_params_obj)
+    recorded_states.append(system_state(current_time, particles))
+    if i % (simulation_params_obj.status_update_skip_steps // simulation_params_obj.csv_file_skip_steps) == 0:
+      print(f'Calculated state {i * simulation_params_obj.csv_file_skip_steps}/{num_steps}')
 
-print('Saving to csv file...')
+  print('Saving to csv file...')
 
-particle_string = get_particle_string(recorded_states)
+  particle_string = get_particle_string(recorded_states)
 
-with open('../../data/calculations_1.csv', 'w') as f:
-  f.write(particle_string)
+  with open(full_file_path, 'w') as f:
+    f.write(particle_string)
+
+perform_simulation_run(1, 'moving_right')
+perform_simulation_run(2, 'gravity')
+perform_simulation_run(3, 'lennard_jones_3x3x3')
+perform_simulation_run(4, 'lennard_jones_7x7x7')
