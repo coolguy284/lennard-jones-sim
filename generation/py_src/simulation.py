@@ -75,11 +75,6 @@ def simulate_tick(particles, simulation_params_obj):
       rescaled_distance_d_dx = -simulation_params_obj.particle_radius / distance ** 2
       
       lennard_jones_strength = -1 * 4 * simulation_params_obj.lennard_jones_well_depth * (12 * rescaled_distance ** 11 * rescaled_distance_d_dx - 6 * rescaled_distance ** 5 * rescaled_distance_d_dx)
-      print(lennard_jones_strength)
-      print((12 * rescaled_distance ** 11 * rescaled_distance_d_dx - 6 * rescaled_distance ** 5 * rescaled_distance_d_dx))
-      print(rescaled_distance)
-      print(rescaled_distance_d_dx)
-      exit()
       
       # calculate total radial force (negative is towards, positive is away)
       radial_force = -gravity_strength + lennard_jones_strength

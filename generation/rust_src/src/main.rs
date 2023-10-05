@@ -266,9 +266,9 @@ fn main() {
   perform_simulation_run(1, "moving_right".to_string(), None);
   perform_simulation_run(2, "gravity".to_string(), None);
   perform_simulation_run(3, "lennard_jones_3x3x3".to_string(), None);
-  perform_simulation_run(4, "lennard_jones_7x7x7".to_string(), Some(true));
-  //perform_simulation_run(5, "lennard_jones_7x7x7_coarse".to_string(), None);
-  //perform_simulation_run(6, "lennard_jones_7x7x7_long".to_string(), None);
-  //perform_simulation_run(7, "lennard_jones_7x7x7_long_lightdamped".to_string(), None);
-  //perform_simulation_run(8, "lennard_jones_7x7x7_long_undamped".to_string(), None);
+  perform_simulation_run(4, "lennard_jones_7x7x7".to_string(), None);
+  perform_simulation_run(5, "lennard_jones_7x7x7_coarse".to_string(), None);
+  perform_simulation_run(6, "lennard_jones_7x7x7_long".to_string(), None);
+  perform_simulation_run(7, "lennard_jones_7x7x7_long_lightdamped".to_string(), None);
+  perform_simulation_run(8, "lennard_jones_7x7x7_long_undamped".to_string(), None);
 }
