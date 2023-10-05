@@ -64,7 +64,7 @@ class simulation_params:
     'particle_mass',
     'grav_constant',
     'lennard_jones_well_depth',
-    'linear_damping_strength',
+    'linear_damping_multiplier',
     'time_step',
     'num_steps',
     'particle_configuration',
@@ -78,7 +78,7 @@ class simulation_params:
     particle_mass,
     grav_constant,
     lennard_jones_well_depth,
-    linear_damping_strength,
+    linear_damping_multiplier,
     time_step,
     num_steps,
     particle_configuration,
@@ -89,7 +89,7 @@ class simulation_params:
     self.particle_mass = particle_mass
     self.grav_constant = grav_constant
     self.lennard_jones_well_depth = lennard_jones_well_depth
-    self.linear_damping_strength = linear_damping_strength
+    self.linear_damping_multiplier = linear_damping_multiplier
     self.time_step = time_step
     self.num_steps = num_steps
     self.particle_configuration = particle_configuration

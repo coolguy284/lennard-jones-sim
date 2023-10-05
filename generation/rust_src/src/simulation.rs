@@ -138,7 +138,7 @@ pub fn simulate_tick(particles: &Vec<Particle>, simulation_params_obj: &Simulati
   }
   
   // apply linear damping
-  if simulation_params_obj.linear_damping_strength != 1.0 {
+  if simulation_params_obj.linear_damping_multiplier != 1.0 {
     for i in 0..new_particles.len() {
       let particle_obj = &new_particles[i];
       
@@ -146,9 +146,9 @@ pub fn simulate_tick(particles: &Vec<Particle>, simulation_params_obj: &Simulati
         x: particle_obj.x,
         y: particle_obj.y,
         z: particle_obj.z,
-        dx: particle_obj.dx * f64::powf(simulation_params_obj.linear_damping_strength, simulation_params_obj.time_step * 1e9),
-        dy: particle_obj.dy * f64::powf(simulation_params_obj.linear_damping_strength, simulation_params_obj.time_step * 1e9),
-        dz: particle_obj.dz * f64::powf(simulation_params_obj.linear_damping_strength, simulation_params_obj.time_step * 1e9),
+        dx: particle_obj.dx * f64::powf(simulation_params_obj.linear_damping_multiplier, simulation_params_obj.time_step * 1e9),
+        dy: particle_obj.dy * f64::powf(simulation_params_obj.linear_damping_multiplier, simulation_params_obj.time_step * 1e9),
+        dz: particle_obj.dz * f64::powf(simulation_params_obj.linear_damping_multiplier, simulation_params_obj.time_step * 1e9),
       };
     }
   }

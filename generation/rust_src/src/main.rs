@@ -77,7 +77,7 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
   let particle_mass = 6.646476989051294e-27; // 1.66053906660e-27 * 4.002602
   let grav_constant = 1e8; // normally 6.67408e-11
   let lennard_jones_well_depth = 1e-32;
-  //let linear_damping_strength = 0.95; // this is basically multiplied by the velocity every nanosecond
+  //let linear_damping_multiplier = 0.95; // this is basically multiplied by the velocity every nanosecond
   let time_step = 1e-9;
   let num_steps = 1000u64;
   
@@ -88,7 +88,7 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         particle_mass,
         grav_constant: 0.0,
         lennard_jones_well_depth: 0.0,
-        linear_damping_strength: 0.0,
+        linear_damping_multiplier: 0.0,
         time_step,
         num_steps,
         particle_configuration: 2,
@@ -102,7 +102,7 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         particle_mass,
         grav_constant,
         lennard_jones_well_depth,
-        linear_damping_strength: 0.95,
+        linear_damping_multiplier: 0.95,
         time_step,
         num_steps,
         particle_configuration: 1,
@@ -116,7 +116,7 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         particle_mass,
         grav_constant,
         lennard_jones_well_depth,
-        linear_damping_strength: 0.95,
+        linear_damping_multiplier: 0.95,
         time_step,
         num_steps,
         particle_configuration: 1,
@@ -130,7 +130,7 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         particle_mass,
         grav_constant,
         lennard_jones_well_depth,
-        linear_damping_strength: 0.95,
+        linear_damping_multiplier: 0.95,
         time_step,
         num_steps,
         particle_configuration: 3,
@@ -144,7 +144,7 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         particle_mass,
         grav_constant,
         lennard_jones_well_depth,
-        linear_damping_strength: 0.95,
+        linear_damping_multiplier: 0.95,
         time_step: time_step * 3.0,
         num_steps,
         particle_configuration: 3,
@@ -158,7 +158,7 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         particle_mass,
         grav_constant,
         lennard_jones_well_depth,
-        linear_damping_strength: 0.95,
+        linear_damping_multiplier: 0.95,
         time_step,
         num_steps: num_steps * 60,
         particle_configuration: 3,
@@ -172,7 +172,7 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         particle_mass,
         grav_constant,
         lennard_jones_well_depth,
-        linear_damping_strength: 0.997,
+        linear_damping_multiplier: 0.997,
         time_step,
         num_steps: num_steps * 60,
         particle_configuration: 3,
@@ -186,7 +186,7 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         particle_mass,
         grav_constant,
         lennard_jones_well_depth,
-        linear_damping_strength: 1.0,
+        linear_damping_multiplier: 1.0,
         time_step,
         num_steps: num_steps * 60,
         particle_configuration: 3,

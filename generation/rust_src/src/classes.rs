@@ -105,7 +105,7 @@ pub struct SimulationParams {
   pub particle_mass: f64,
   pub grav_constant: f64,
   pub lennard_jones_well_depth: f64,
-  pub linear_damping_strength: f64,
+  pub linear_damping_multiplier: f64,
   pub time_step: f64,
   pub num_steps: u64,
   pub particle_configuration: u8,

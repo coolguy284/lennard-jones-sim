@@ -97,7 +97,7 @@ def simulate_tick(particles, simulation_params_obj):
     new_particles[i] = particle_obj.apply_own_velocity(simulation_params_obj.time_step)
   
   # apply linear damping
-  if simulation_params_obj.linear_damping_strength != 1:
+  if simulation_params_obj.linear_damping_multiplier != 1:
     for i in range(len(new_particles)):
       particle_obj = new_particles[i]
       
@@ -105,9 +105,9 @@ def simulate_tick(particles, simulation_params_obj):
         particle_obj.x,
         particle_obj.y,
         particle_obj.z,
-        particle_obj.dx * simulation_params_obj.linear_damping_strength ** (simulation_params_obj.time_step * 1e9),
-        particle_obj.dy * simulation_params_obj.linear_damping_strength ** (simulation_params_obj.time_step * 1e9),
-        particle_obj.dz * simulation_params_obj.linear_damping_strength ** (simulation_params_obj.time_step * 1e9),
+        particle_obj.dx * simulation_params_obj.linear_damping_multiplier ** (simulation_params_obj.time_step * 1e9),
+        particle_obj.dy * simulation_params_obj.linear_damping_multiplier ** (simulation_params_obj.time_step * 1e9),
+        particle_obj.dz * simulation_params_obj.linear_damping_multiplier ** (simulation_params_obj.time_step * 1e9),
       )
   
   # convert back to tuple

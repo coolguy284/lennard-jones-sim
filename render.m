@@ -11,7 +11,7 @@ bound_limits = [-3, 3];
 
 % Load in table
 if ~exist('recorded_states', 'var')
-    recorded_states = readtable('data/calculations_04_lennard_jones_7x7x7.csv');
+    recorded_states = readtable('data/calculations_05_lennard_jones_7x7x7_coarse.csv');
     
     % Get rows and cols of table for later
     [rows, cols] = size(recorded_states);
