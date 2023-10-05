@@ -38,7 +38,7 @@ def populate_particles_list():
         y = j * particle_spacing
         z = k * particle_spacing
         
-        particles.append(particle(x, y, z, 0, 0, 0))
+        particles.append(particle(x, y, z, particle_spacing / time_step * 0.05, 0, 0))
   
   return tuple(particles)
 
@@ -49,8 +49,25 @@ class system_state:
     self.time = time
     self.particles = particles
 
-def simulate_tick(particles):
-  return particles
+def simulate_tick(particles, time_step):
+  # convert to list
+  particles = list(particles)
+  
+  # apply velocity
+  for i in range(len(particles)):
+    particle_obj = particles[i]
+    
+    particles[i] = particle(
+      particle_obj.x + particle_obj.dx * time_step,
+      particle_obj.y + particle_obj.dy * time_step,
+      particle_obj.z + particle_obj.dz * time_step,
+      particle_obj.dx,
+      particle_obj.dy,
+      particle_obj.dz
+    )
+  
+  # convert back to tuple
+  return tuple(particles)
 
 def get_particle_string(recorded_states):
   # figure out column headers
@@ -80,13 +97,13 @@ def get_particle_string(recorded_states):
     
     file_line.append(str(state.time))
     
-    for particle in state.particles:
-      file_line.append(str(particle.x))
-      file_line.append(str(particle.y))
-      file_line.append(str(particle.z))
-      file_line.append(str(particle.dx))
-      file_line.append(str(particle.dy))
-      file_line.append(str(particle.dz))
+    for particle_obj in state.particles:
+      file_line.append(str(particle_obj.x))
+      file_line.append(str(particle_obj.y))
+      file_line.append(str(particle_obj.z))
+      file_line.append(str(particle_obj.dx))
+      file_line.append(str(particle_obj.dy))
+      file_line.append(str(particle_obj.dz))
     
     file_lines.append(','.join(file_line))
   
@@ -102,7 +119,7 @@ recorded_states.append(system_state(0, particles))
 
 for i in range(1, num_steps + 1):
   current_time = time_step * i
-  particles = simulate_tick(particles)
+  particles = simulate_tick(particles, time_step)
   recorded_states.append(system_state(current_time, particles))
 
 particle_string = get_particle_string(recorded_states)
