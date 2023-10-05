@@ -41,10 +41,20 @@ for row = 1:1:rows
             y_positions = recorded_states{row,initial_cols + 2:particle_state_length:cols};
             z_positions = recorded_states{row,initial_cols + 3:particle_state_length:cols};
             plot3(x_positions, y_positions, z_positions, 'o');
-            title(sprintf('Time: %f', recorded_states{row,1}));
+            title('Movement of Lennard-Jones Particles in 7x7x7 "crystal"');
             xlim(bound_limits);
             ylim(bound_limits);
             zlim(bound_limits);
+            xlabel('x-coord (m * 10^{-10})');
+            ylabel('y-coord (m * 10^{-10})');
+            zlabel('z-coord (m * 10^{-10})');
+            delete(findall(gcf, 'type', 'annotation'));
+            annotation('textbox', ...
+                [0, 0, .4, .1], ...
+                'String', ...
+                sprintf('Time: %f (s * 10^{-8})', recorded_states{row,1}), ...
+                'EdgeColor', ...
+                'none');
     end
     pause(time_delay);
 end
