@@ -7,7 +7,7 @@ close all
 initial_cols = 1;
 particle_state = 6;
 time_delay = 0.01;
-bound_limits = [-2, 2];
+bound_limits = [-3, 3];
 
 % Load in table
 recorded_states = readtable('data/calculations_1.csv');
@@ -25,7 +25,7 @@ recorded_states{:,initial_cols + 1:cols} = ...
 % 'plot'
 mode = 'plot';
 
-for row = 1:1:rows
+for row = 1:10:rows
     for col = initial_cols + 1:particle_state:cols
         switch mode
             case 'print'

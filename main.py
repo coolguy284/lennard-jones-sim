@@ -7,10 +7,11 @@ particle_radius = 40e-12
 particle_mass = 6.646476989051294e-27 # 1.66053906660e-27 * 4.002602
 grav_constant = 0 # normally 6.67408e-11
 lennard_jones_well_depth = 1e-32
+linear_damping_strength = 0.95 # this is basically multiplied by the velocity every nanosecond
 time_step = 1e-9
 num_steps = 1000
 csv_file_skip_steps = 10
-status_update_skip_steps = 100
+status_update_skip_steps = 10
 testing = False
 
 # particles objects go here
@@ -74,9 +75,9 @@ def populate_particles_list():
   
   particle_spacing = particle_radius * 2
 
-  x_span = 2
-  y_span = 2
-  z_span = 2
+  x_span = 6
+  y_span = 6
+  z_span = 6
   
   for i in range(floor(-x_span / 2), floor(x_span / 2) + 1):
     for j in range(floor(-y_span / 2), floor(y_span / 2) + 1):
@@ -142,6 +143,21 @@ def simulate_tick(particles, time_step):
     particle_obj = new_particles[i]
     
     new_particles[i] = particle_obj.apply_own_velocity(time_step)
+  
+  # apply linear damping
+  if linear_damping_strength != 1:
+    # apply velocity
+    for i in range(len(new_particles)):
+      particle_obj = new_particles[i]
+      
+      new_particles[i] = particle(
+        particle_obj.x,
+        particle_obj.y,
+        particle_obj.z,
+        particle_obj.dx * linear_damping_strength ** (time_step * 1e9),
+        particle_obj.dy * linear_damping_strength ** (time_step * 1e9),
+        particle_obj.dz * linear_damping_strength ** (time_step * 1e9),
+      )
   
   # convert back to tuple
   return tuple(new_particles)
