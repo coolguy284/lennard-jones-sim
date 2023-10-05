@@ -6,13 +6,7 @@ from os.path import exists
 # simulation modeled after helium atom
 # radius = 140 pm (van der walls), 28 pm (covalent); 40 pm is the value we're going with, so 40e-12 m
 # mass = 4.002 602 mass units; one dalton (atomic mass unit) is 1.660 539 066 60e-27; so mass is 6.646476989051294e-27 kg
-particle_radius = 40e-12
-particle_mass = 6.646476989051294e-27 # 1.66053906660e-27 * 4.002602
-grav_constant = 0 # normally 6.67408e-11
-lennard_jones_well_depth = 1e-32
-linear_damping_strength = 0.95 # this is basically multiplied by the velocity every nanosecond
-time_step = 1e-9
-num_steps = 1000
+# constants defined in perform_simulation_run
 
 # change directory to program's path
 chdir(sys.path[0])
@@ -105,7 +99,7 @@ def populate_particles_list(simulation_params_obj):
           y = j * particle_spacing
           z = k * particle_spacing
           
-          particles.append(particle(x, y, z, particle_spacing / time_step * 0.05, 0, 0))
+          particles.append(particle(x, y, z, particle_spacing / simulation_params_obj.time_step * 0.05, 0, 0))
   elif simulation_params_obj.particle_configuration == 3:
     x_span = 6
     y_span = 6
@@ -145,16 +139,16 @@ class simulation_params:
   
   def __init__(
     self,
-    particle_radius = particle_radius,
-    particle_mass = particle_mass,
-    grav_constant = grav_constant,
-    lennard_jones_well_depth = lennard_jones_well_depth,
-    linear_damping_strength = linear_damping_strength,
-    time_step = time_step,
-    num_steps = num_steps,
-    particle_configuration = 1,
-    csv_file_skip_steps = 10,
-    status_update_skip_steps = 100
+    particle_radius,
+    particle_mass,
+    grav_constant,
+    lennard_jones_well_depth,
+    linear_damping_strength,
+    time_step,
+    num_steps,
+    particle_configuration,
+    csv_file_skip_steps,
+    status_update_skip_steps
   ):
     self.particle_radius = particle_radius
     self.particle_mass = particle_mass
@@ -192,27 +186,27 @@ def simulate_tick(particles, simulation_params_obj):
       rescaled_distance = simulation_params_obj.particle_radius / distance
       rescaled_distance_d_dx = -simulation_params_obj.particle_radius / distance ** 2
       
-      lennard_jones_strength = -1 * 4 * lennard_jones_well_depth * (12 * rescaled_distance ** 11 * rescaled_distance_d_dx - 6 * rescaled_distance ** 5 * rescaled_distance_d_dx)
+      lennard_jones_strength = -1 * 4 * simulation_params_obj.lennard_jones_well_depth * (12 * rescaled_distance ** 11 * rescaled_distance_d_dx - 6 * rescaled_distance ** 5 * rescaled_distance_d_dx)
       
       # calculate total radial force (negative is towards, positive is away)
       radial_force = -gravity_strength + lennard_jones_strength
       
       # calculate radial force
-      particle_one_accel = radial_force / particle_mass
-      particle_two_accel = radial_force / particle_mass
+      particle_one_accel = radial_force / simulation_params_obj.particle_mass
+      particle_two_accel = radial_force / simulation_params_obj.particle_mass
       
       particle_one_accel_vector = particle_obj.vector_away_from_other(particle_two_obj, particle_one_accel)
       particle_two_accel_vector = particle_two_obj.vector_away_from_other(particle_obj, particle_two_accel)
       
       # apply radial force
-      new_particles[i] = new_particles[i].apply_acceleration(*particle_one_accel_vector, time_step)
-      new_particles[j] = new_particles[j].apply_acceleration(*particle_two_accel_vector, time_step)
+      new_particles[i] = new_particles[i].apply_acceleration(*particle_one_accel_vector, simulation_params_obj.time_step)
+      new_particles[j] = new_particles[j].apply_acceleration(*particle_two_accel_vector, simulation_params_obj.time_step)
   
   # apply velocity
   for i in range(len(new_particles)):
     particle_obj = new_particles[i]
     
-    new_particles[i] = particle_obj.apply_own_velocity(time_step)
+    new_particles[i] = particle_obj.apply_own_velocity(simulation_params_obj.time_step)
   
   # apply linear damping
   if simulation_params_obj.linear_damping_strength != 1:
@@ -224,9 +218,9 @@ def simulate_tick(particles, simulation_params_obj):
         particle_obj.x,
         particle_obj.y,
         particle_obj.z,
-        particle_obj.dx * simulation_params_obj.linear_damping_strength ** (time_step * 1e9),
-        particle_obj.dy * simulation_params_obj.linear_damping_strength ** (time_step * 1e9),
-        particle_obj.dz * simulation_params_obj.linear_damping_strength ** (time_step * 1e9),
+        particle_obj.dx * simulation_params_obj.linear_damping_strength ** (simulation_params_obj.time_step * 1e9),
+        particle_obj.dy * simulation_params_obj.linear_damping_strength ** (simulation_params_obj.time_step * 1e9),
+        particle_obj.dz * simulation_params_obj.linear_damping_strength ** (simulation_params_obj.time_step * 1e9),
       )
   
   # convert back to tuple
@@ -279,16 +273,26 @@ if testing:
   print(particle_one.vector_away_from_other(particle_two, 2.0))
   exit()
 
-def perform_simulation_run(run_number, file_name):
+def perform_simulation_run(run_number, file_name, force_rerun = False):
   file_name_extended = f'{run_number:0>2}_{file_name}'
   full_file_path = f'../../data/calculations_{file_name_extended}.csv'
   
-  print(f'Simulating run {file_name_extended}...\n')
+  print(f'Simulating run {file_name_extended}...')
   
   # assume already calculated if file already exists
-  if exists(full_file_path):
+  if not force_rerun and exists(full_file_path):
     print('Path already exists, not calculating.')
+    print()
     return
+  
+  # constants defined here
+  particle_radius = 40e-12
+  particle_mass = 6.646476989051294e-27 # 1.66053906660e-27 * 4.002602
+  grav_constant = 0 # normally 6.67408e-11
+  lennard_jones_well_depth = 1e-32
+  linear_damping_strength = 0.95 # this is basically multiplied by the velocity every nanosecond
+  time_step = 1e-9
+  num_steps = 1000
   
   if run_number == 1:
     simulation_params_obj = simulation_params(
@@ -340,7 +344,20 @@ def perform_simulation_run(run_number, file_name):
       num_steps = num_steps,
       particle_configuration = 3,
       csv_file_skip_steps = 10,
-      status_update_skip_steps = 100,
+      status_update_skip_steps = 10,
+    )
+  elif run_number == 5:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_strength = linear_damping_strength,
+      time_step = time_step * 3,
+      num_steps = num_steps,
+      particle_configuration = 3,
+      csv_file_skip_steps = 10,
+      status_update_skip_steps = 10,
     )
 
   print('Creating particles...')
@@ -363,7 +380,7 @@ def perform_simulation_run(run_number, file_name):
       particles = simulate_tick(particles, simulation_params_obj)
     recorded_states.append(system_state(current_time, particles))
     if i % (simulation_params_obj.status_update_skip_steps // simulation_params_obj.csv_file_skip_steps) == 0:
-      print(f'Calculated state {i * simulation_params_obj.csv_file_skip_steps}/{num_steps}')
+      print(f'Calculated state {i * simulation_params_obj.csv_file_skip_steps}/{simulation_params_obj.num_steps}')
 
   print('Saving to csv file...')
 
@@ -371,8 +388,11 @@ def perform_simulation_run(run_number, file_name):
 
   with open(full_file_path, 'w') as f:
     f.write(particle_string)
+  
+  print()
 
 perform_simulation_run(1, 'moving_right')
 perform_simulation_run(2, 'gravity')
 perform_simulation_run(3, 'lennard_jones_3x3x3')
 perform_simulation_run(4, 'lennard_jones_7x7x7')
+perform_simulation_run(5, 'lennard_jones_7x7x7_coarse', force_rerun = True)
