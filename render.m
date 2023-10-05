@@ -7,7 +7,7 @@ close all
 initial_cols = 1;
 particle_state = 6;
 time_delay = 0.01;
-bound_limits = [-10, 10];
+bound_limits = [-2, 2];
 
 % Load in table
 recorded_states = readtable('data/calculations_1.csv');

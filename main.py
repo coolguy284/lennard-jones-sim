@@ -5,7 +5,7 @@ from math import floor
 # mass = 4.002 602 mass units; one dalton (atomic mass unit) is 1.660 539 066 60e-27; so mass is 6.646476989051294e-27 kg
 particle_radius = 40e-12
 particle_mass = 6.646476989051294e-27 # 1.66053906660e-27 * 4.002602
-grav_constant = 1 # normally 6.67408e-11
+grav_constant = 1e8 # normally 6.67408e-11
 time_step = 1e-9
 num_steps = 1000
 csv_file_skip_steps = 10
@@ -114,7 +114,7 @@ def simulate_tick(particles, time_step):
       gravity_strength = grav_constant * particle_mass * particle_mass / distance_squared if distance_squared != 0 else 0
       
       # calculate total radial force (negative is towards, positive is away)
-      radial_force = 1e-24 #-gravity_strength
+      radial_force = -gravity_strength
       
       # calculate radial force
       particle_one_accel = radial_force / particle_mass
