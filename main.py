@@ -10,6 +10,7 @@ time_step = 1e-9
 num_steps = 1000
 csv_file_skip_steps = 10
 status_update_skip_steps = 100
+testing = False
 
 # particles objects go here
 particles = None
@@ -35,12 +36,36 @@ class particle:
     # multiply difference between the 2 particles' positions, by 1 / distance, then by length
     
     # calculate this multiplication constant
-    multiplication_const = 1 / self.distance_to(other) * length
+    distance = self.distance_to(other)
+    multiplication_const = 1 / distance * length if distance != 0 else 0
     
     return (
       -(other.x - self.x) * multiplication_const,
       -(other.y - self.y) * multiplication_const,
       -(other.z - self.z) * multiplication_const
+    )
+  
+  def apply_velocity(self, dx, dy, dz, time_step):
+    return particle(
+      self.x + self.dx * time_step,
+      self.y + self.dy * time_step,
+      self.z + self.dz * time_step,
+      self.dx,
+      self.dy,
+      self.dz
+    )
+  
+  def apply_own_velocity(self, time_step):
+    return self.apply_velocity(self.dx, self.dy, self.dz, time_step)
+  
+  def apply_acceleration(self, ddx, ddy, ddz, time_step):
+    return particle(
+      self.x,
+      self.y,
+      self.z,
+      self.dx + ddx * time_step,
+      self.dy + ddy * time_step,
+      self.dz + ddz * time_step,
     )
 
 def populate_particles_list():
@@ -79,17 +104,17 @@ def simulate_tick(particles, time_step):
     particle_obj = particles[i]
     
     # for every other particle in front of this particle
-    for j in range(i + 1, len(particles)):
+    for j in range(len(particles)):
       # calculate distance to particle
       particle_two_obj = particles[j]
       
       distance_squared = particle_obj.distance_to_squared(particle_two_obj)
       
       # calculate strength of gravitational force
-      gravity_strength = grav_constant * particle_mass * particle_mass / distance_squared
+      gravity_strength = grav_constant * particle_mass * particle_mass / distance_squared if distance_squared != 0 else 0
       
       # calculate total radial force (negative is towards, positive is away)
-      radial_force = gravity_strength
+      radial_force = 1e-24 #-gravity_strength
       
       # calculate radial force
       particle_one_accel = radial_force / particle_mass
@@ -99,36 +124,15 @@ def simulate_tick(particles, time_step):
       particle_two_accel_vector = particle_two_obj.vector_away_from_other(particle_obj, particle_two_accel)
       
       # apply radial force
-      particles[i] = particle(
-        particle_obj.x,
-        particle_obj.y,
-        particle_obj.z,
-        particle_obj.dx + particle_one_accel_vector[0],
-        particle_obj.dy + particle_one_accel_vector[1],
-        particle_obj.dz + particle_one_accel_vector[2],
-      )
-      particles[j] = particle(
-        particle_two_obj.x,
-        particle_two_obj.y,
-        particle_two_obj.z,
-        particle_two_obj.dx + particle_two_accel_vector[0],
-        particle_two_obj.dy + particle_two_accel_vector[1],
-        particle_two_obj.dz + particle_two_accel_vector[2],
-      )
+      particles[i] = particle_obj.apply_acceleration(*particle_one_accel_vector, time_step)
+      particles[j] = particle_two_obj.apply_acceleration(*particle_two_accel_vector, time_step)
   
   # apply velocity
   for i in range(len(particles)):
     particle_obj = particles[i]
     
     # apply velocity
-    particles[i] = particle(
-      particle_obj.x + particle_obj.dx * time_step,
-      particle_obj.y + particle_obj.dy * time_step,
-      particle_obj.z + particle_obj.dz * time_step,
-      particle_obj.dx,
-      particle_obj.dy,
-      particle_obj.dz
-    )
+    particles[i] = particle_obj.apply_own_velocity(time_step)
   
   # convert back to tuple
   return tuple(particles)
@@ -172,6 +176,13 @@ def get_particle_string(recorded_states):
     file_lines.append(','.join(file_line))
   
   return '\n'.join(file_lines)
+
+if testing:
+  particle_one = particle(0, 0, 0, 0, 0, 0)
+  particle_two = particle(0.1, 0.1, 0.1, 0, 0, 0)
+  print(particle_one.distance_to(particle_two))
+  print(particle_one.vector_away_from_other(particle_two, 2.0))
+  exit()
 
 print('Creating particles...')
 
