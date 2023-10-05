@@ -1,0 +1,9 @@
+Energy - KE, GPE, LJPE
+Momentum - total momentum
+COM - pos, vel, acc
+Internal KE (subtract COM vel)
+Internal KE per capita (subtract COM vel / divide by num of particles)
+
+Rotation Speed
+Rotation Acceleration (should be 0?)
+Angular Momentum
