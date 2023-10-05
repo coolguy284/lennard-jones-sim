@@ -7,6 +7,7 @@ particle_radius = 40e-12
 particle_mass = 6.646476989051294e-27 # 1.66053906660e-27 * 4.002602
 time_step = 1e-9
 num_steps = 1000
+csv_file_skip_steps = 10
 
 # particles objects go here
 particles = None
@@ -117,9 +118,10 @@ recorded_states = [
 
 recorded_states.append(system_state(0, particles))
 
-for i in range(1, num_steps + 1):
+for i in range(1, num_steps // csv_file_skip_steps + 1):
   current_time = time_step * i
-  particles = simulate_tick(particles, time_step)
+  for i in range(csv_file_skip_steps):
+    particles = simulate_tick(particles, time_step)
   recorded_states.append(system_state(current_time, particles))
 
 particle_string = get_particle_string(recorded_states)
