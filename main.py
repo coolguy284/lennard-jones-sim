@@ -97,14 +97,14 @@ class system_state:
 
 def simulate_tick(particles, time_step):
   # convert to list
-  particles = list(particles)
+  new_particles = list(particles)
   
   # calculate forces
   for i in range(len(particles)):
     particle_obj = particles[i]
     
     # for every other particle in front of this particle
-    for j in range(len(particles)):
+    for j in range(i + 1, len(particles)):
       # calculate distance to particle
       particle_two_obj = particles[j]
       
@@ -124,18 +124,17 @@ def simulate_tick(particles, time_step):
       particle_two_accel_vector = particle_two_obj.vector_away_from_other(particle_obj, particle_two_accel)
       
       # apply radial force
-      particles[i] = particle_obj.apply_acceleration(*particle_one_accel_vector, time_step)
-      particles[j] = particle_two_obj.apply_acceleration(*particle_two_accel_vector, time_step)
+      new_particles[i] = new_particles[i].apply_acceleration(*particle_one_accel_vector, time_step)
+      new_particles[j] = new_particles[j].apply_acceleration(*particle_two_accel_vector, time_step)
   
   # apply velocity
-  for i in range(len(particles)):
-    particle_obj = particles[i]
+  for i in range(len(new_particles)):
+    particle_obj = new_particles[i]
     
-    # apply velocity
-    particles[i] = particle_obj.apply_own_velocity(time_step)
+    new_particles[i] = particle_obj.apply_own_velocity(time_step)
   
   # convert back to tuple
-  return tuple(particles)
+  return tuple(new_particles)
 
 def get_particle_string(recorded_states):
   # figure out column headers
