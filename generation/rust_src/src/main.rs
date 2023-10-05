@@ -206,6 +206,48 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         status_update_skip_steps: 10,
       }
     }
+    9 => {
+      SimulationParams {
+        particle_radius,
+        particle_mass,
+        grav_constant,
+        lennard_jones_well_depth,
+        linear_damping_multiplier: 1.0,
+        time_step: time_step / 10.0,
+        num_steps: num_steps * 200,
+        particle_configuration: 3,
+        csv_file_skip_steps: 100,
+        status_update_skip_steps: 100,
+      }
+    }
+    10 => {
+      SimulationParams {
+        particle_radius,
+        particle_mass,
+        grav_constant,
+        lennard_jones_well_depth,
+        linear_damping_multiplier: 0.997,
+        time_step: time_step / 10.0,
+        num_steps: num_steps * 200,
+        particle_configuration: 3,
+        csv_file_skip_steps: 100,
+        status_update_skip_steps: 100,
+      }
+    }
+    11 => {
+      SimulationParams {
+        particle_radius,
+        particle_mass,
+        grav_constant,
+        lennard_jones_well_depth,
+        linear_damping_multiplier: 0.9998,
+        time_step: time_step / 10.0,
+        num_steps: num_steps * 250,
+        particle_configuration: 3,
+        csv_file_skip_steps: 20,
+        status_update_skip_steps: 100,
+      }
+    }
     _ => {
       panic!("Run number {} invalid", run_number);
     }
@@ -283,4 +325,7 @@ fn main() {
   perform_simulation_run(6, "lennard_jones_7x7x7_long".to_string(), None);
   perform_simulation_run(7, "lennard_jones_7x7x7_long_lightdamped".to_string(), None);
   perform_simulation_run(8, "lennard_jones_7x7x7_long_undamped".to_string(), None);
+  perform_simulation_run(9, "lennard_jones_7x7x7_long_undamped_accurate".to_string(), None);
+  perform_simulation_run(10, "lennard_jones_7x7x7_long_lightdamped_accurate".to_string(), None);
+  perform_simulation_run(11, "lennard_jones_7x7x7_long_verylightdamped_accurate".to_string(), None);
 }

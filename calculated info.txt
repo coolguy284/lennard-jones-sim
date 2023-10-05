@@ -7,3 +7,9 @@ Internal KE per capita (subtract COM vel / divide by num of particles)
 Rotation Speed
 Rotation Acceleration (should be 0?)
 Angular Momentum
+
+
+program stats:
+python: run 6 takes 6 hours
+rust debug build: 30x speedup
+rust release build: 450x speedup

@@ -177,6 +177,45 @@ def perform_simulation_run(run_number, file_name, force_rerun = False):
       csv_file_skip_steps = 10,
       status_update_skip_steps = 10,
     )
+  elif run_number == 9:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_multiplier = 1,
+      time_step = time_step / 10,
+      num_steps = num_steps * 200,
+      particle_configuration = 3,
+      csv_file_skip_steps = 100,
+      status_update_skip_steps = 100,
+    )
+  elif run_number == 10:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_multiplier = 0.997,
+      time_step = time_step / 10,
+      num_steps = num_steps * 200,
+      particle_configuration = 3,
+      csv_file_skip_steps = 100,
+      status_update_skip_steps = 100,
+    )
+  elif run_number == 11:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_multiplier = 0.9998,
+      time_step = time_step / 10,
+      num_steps = num_steps * 250,
+      particle_configuration = 3,
+      csv_file_skip_steps = 20,
+      status_update_skip_steps = 100,
+    )
 
   print('Creating particles...')
 
@@ -230,3 +269,6 @@ perform_simulation_run(5, 'lennard_jones_7x7x7_coarse')
 perform_simulation_run(6, 'lennard_jones_7x7x7_long')
 perform_simulation_run(7, 'lennard_jones_7x7x7_long_lightdamped')
 perform_simulation_run(8, 'lennard_jones_7x7x7_long_undamped')
+perform_simulation_run(9, 'lennard_jones_7x7x7_long_undamped_accurate')
+perform_simulation_run(10, 'lennard_jones_7x7x7_long_lightdamped_accurate')
+perform_simulation_run(11, 'lennard_jones_7x7x7_long_verylightdamped_accurate')
