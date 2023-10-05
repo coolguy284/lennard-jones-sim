@@ -5,7 +5,8 @@ from math import floor
 # mass = 4.002 602 mass units; one dalton (atomic mass unit) is 1.660 539 066 60e-27; so mass is 6.646476989051294e-27 kg
 particle_radius = 40e-12
 particle_mass = 6.646476989051294e-27 # 1.66053906660e-27 * 4.002602
-grav_constant = 1e8 # normally 6.67408e-11
+grav_constant = 0 # normally 6.67408e-11
+lennard_jones_well_depth = 1e-32
 time_step = 1e-9
 num_steps = 1000
 csv_file_skip_steps = 10
@@ -109,12 +110,21 @@ def simulate_tick(particles, time_step):
       particle_two_obj = particles[j]
       
       distance_squared = particle_obj.distance_to_squared(particle_two_obj)
+      distance = distance_squared ** 0.5
       
       # calculate strength of gravitational force
       gravity_strength = grav_constant * particle_mass * particle_mass / distance_squared if distance_squared != 0 else 0
       
+      # calculate strength of lennard jones force
+      # potential energy is 4 * lennard_jones_well_depth * ((particle_radius / distance) ^ 12 - (particle_radius / distance) ^ 6)
+      # force is -1 * 4 * lennard_jones_well_depth * (12 * (particle_radius / distance) ^ 11 * (-particle_radius / distance^2) - 6 * (particle_radius / distance) ^ 5 * (-particle_radius / distance^2))
+      rescaled_distance = particle_radius / distance
+      rescaled_distance_d_dx = -particle_radius / distance ** 2
+      
+      lennard_jones_strength = -1 * 4 * lennard_jones_well_depth * (12 * rescaled_distance ** 11 * rescaled_distance_d_dx - 6 * rescaled_distance ** 5 * rescaled_distance_d_dx)
+      
       # calculate total radial force (negative is towards, positive is away)
-      radial_force = -gravity_strength
+      radial_force = -gravity_strength + lennard_jones_strength
       
       # calculate radial force
       particle_one_accel = radial_force / particle_mass
