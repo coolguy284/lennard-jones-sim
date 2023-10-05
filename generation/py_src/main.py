@@ -1,4 +1,6 @@
+import sys
 from math import floor
+from os import chdir
 
 # simulation modeled after helium atom
 # radius = 140 pm (van der walls), 28 pm (covalent); 40 pm is the value we're going with, so 40e-12 m
@@ -12,6 +14,10 @@ time_step = 1e-9
 num_steps = 1000
 csv_file_skip_steps = 10
 status_update_skip_steps = 10
+
+# change directory to program's path
+chdir(sys.path[0])
+
 testing = False
 
 # particles objects go here
@@ -252,7 +258,7 @@ recorded_states = [
   # array of systemstate objects go here
 ]
 
-print('Saving initial state...')
+print('Recording initial state...')
 
 recorded_states.append(system_state(0, particles))
 
@@ -280,5 +286,5 @@ print('Saving to csv file...')
 
 particle_string = get_particle_string(recorded_states)
 
-with open('data/calculations_1.csv', 'w') as f:
+with open('../../data/calculations_1.csv', 'w') as f:
   f.write(particle_string)
