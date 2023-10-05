@@ -118,7 +118,7 @@ pub fn simulate_tick(particles: &Vec<Particle>, simulation_params_obj: &Simulati
             let rescaled_distance = simulation_params_obj.particle_radius / distance;
             let rescaled_distance_d_dx = -simulation_params_obj.particle_radius / (distance * distance);
             
-            lennard_jones_strength = -1.0 * 4.0 * simulation_params_obj.lennard_jones_well_depth * (12.0 * f64::powf(rescaled_distance, 11.0) * rescaled_distance_d_dx - 6.0 * f64::powf(rescaled_distance, 5.0) * rescaled_distance_d_dx);
+            lennard_jones_strength = -1.0 * 4.0 * simulation_params_obj.lennard_jones_well_depth * (12.0 * f64::powi(rescaled_distance, 11) * rescaled_distance_d_dx - 6.0 * f64::powi(rescaled_distance, 5) * rescaled_distance_d_dx);
           } else {
             lennard_jones_strength = 0.0;
           }
