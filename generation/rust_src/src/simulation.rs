@@ -1,7 +1,7 @@
 use crate::classes::Particle;
 use crate::classes::SimulationParams;
 
-pub fn populate_particles_list(simulation_params_obj: SimulationParams) -> Vec<Particle> {
+pub fn populate_particles_list(simulation_params_obj: &SimulationParams) -> Vec<Particle> {
   let mut particles = Vec::<Particle>::new();
   
   let particle_spacing = simulation_params_obj.particle_radius * 2.0;
@@ -83,7 +83,7 @@ pub fn populate_particles_list(simulation_params_obj: SimulationParams) -> Vec<P
   particles
 }
 
-pub fn simulate_tick(particles: Vec<Particle>, simulation_params_obj: SimulationParams) -> Vec<Particle> {
+pub fn simulate_tick(particles: &Vec<Particle>, simulation_params_obj: &SimulationParams) -> Vec<Particle> {
   // make array for simulation output
   let mut new_particles = particles.to_vec();
   

@@ -67,9 +67,9 @@ def perform_simulation_run(run_number, file_name, force_rerun = False):
   # constants defined here
   particle_radius = 40e-12
   particle_mass = 6.646476989051294e-27 # 1.66053906660e-27 * 4.002602
-  grav_constant = 0 # normally 6.67408e-11
+  grav_constant = 1e8 # normally 6.67408e-11
   lennard_jones_well_depth = 1e-32
-  linear_damping_strength = 0.95 # this is basically multiplied by the velocity every nanosecond
+  #linear_damping_strength = 0.95 # this is basically multiplied by the velocity every nanosecond
   time_step = 1e-9
   num_steps = 1000
   
@@ -218,6 +218,9 @@ if testing:
 
 # change directory to program's path
 chdir(sys.path[0])
+
+print('Lennard Jones Simulator -- Python Version')
+print()
 
 perform_simulation_run(1, 'moving_right')
 perform_simulation_run(2, 'gravity')
