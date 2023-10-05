@@ -97,7 +97,42 @@ class system_state:
     self.time = time
     self.particles = particles
 
-def simulate_tick(particles, time_step):
+class simulation_params:
+  __slots__ = (
+    'particle_radius',
+    'particle_mass',
+    'grav_constant',
+    'lennard_jones_well_depth',
+    'linear_damping_strength',
+    'time_step',
+    'num_steps',
+    'csv_file_skip_steps',
+    'status_update_skip_steps',
+  )
+  
+  def __init__(
+    self,
+    particle_radius = particle_radius,
+    particle_mass = particle_mass,
+    grav_constant = grav_constant,
+    lennard_jones_well_depth = lennard_jones_well_depth,
+    linear_damping_strength = linear_damping_strength,
+    time_step = time_step,
+    num_steps = num_steps,
+    csv_file_skip_steps = csv_file_skip_steps,
+    status_update_skip_steps = status_update_skip_steps,
+  ):
+    self.particle_radius = particle_radius
+    self.particle_mass = particle_mass
+    self.grav_constant = grav_constant
+    self.lennard_jones_well_depth = lennard_jones_well_depth
+    self.linear_damping_strength = linear_damping_strength
+    self.time_step = time_step
+    self.num_steps = num_steps
+    self.csv_file_skip_steps = csv_file_skip_steps
+    self.status_update_skip_steps = status_update_skip_steps
+
+def simulate_tick(particles, simulation_params_obj):
   # convert to list
   new_particles = list(particles)
   
@@ -114,13 +149,13 @@ def simulate_tick(particles, time_step):
       distance = distance_squared ** 0.5
       
       # calculate strength of gravitational force
-      gravity_strength = grav_constant * particle_mass * particle_mass / distance_squared if distance_squared != 0 else 0
+      gravity_strength = simulation_params_obj.grav_constant * simulation_params_obj.particle_mass * simulation_params_obj.particle_mass / distance_squared if distance_squared != 0 else 0
       
       # calculate strength of lennard jones force
       # potential energy is 4 * lennard_jones_well_depth * ((particle_radius / distance) ^ 12 - (particle_radius / distance) ^ 6)
       # force is -1 * 4 * lennard_jones_well_depth * (12 * (particle_radius / distance) ^ 11 * (-particle_radius / distance^2) - 6 * (particle_radius / distance) ^ 5 * (-particle_radius / distance^2))
-      rescaled_distance = particle_radius / distance
-      rescaled_distance_d_dx = -particle_radius / distance ** 2
+      rescaled_distance = simulation_params_obj.particle_radius / distance
+      rescaled_distance_d_dx = -simulation_params_obj.particle_radius / distance ** 2
       
       lennard_jones_strength = -1 * 4 * lennard_jones_well_depth * (12 * rescaled_distance ** 11 * rescaled_distance_d_dx - 6 * rescaled_distance ** 5 * rescaled_distance_d_dx)
       
@@ -145,7 +180,7 @@ def simulate_tick(particles, time_step):
     new_particles[i] = particle_obj.apply_own_velocity(time_step)
   
   # apply linear damping
-  if linear_damping_strength != 1:
+  if simulation_params_obj.linear_damping_strength != 1:
     # apply velocity
     for i in range(len(new_particles)):
       particle_obj = new_particles[i]
@@ -154,9 +189,9 @@ def simulate_tick(particles, time_step):
         particle_obj.x,
         particle_obj.y,
         particle_obj.z,
-        particle_obj.dx * linear_damping_strength ** (time_step * 1e9),
-        particle_obj.dy * linear_damping_strength ** (time_step * 1e9),
-        particle_obj.dz * linear_damping_strength ** (time_step * 1e9),
+        particle_obj.dx * simulation_params_obj.linear_damping_strength ** (time_step * 1e9),
+        particle_obj.dy * simulation_params_obj.linear_damping_strength ** (time_step * 1e9),
+        particle_obj.dz * simulation_params_obj.linear_damping_strength ** (time_step * 1e9),
       )
   
   # convert back to tuple
@@ -221,12 +256,24 @@ print('Saving initial state...')
 
 recorded_states.append(system_state(0, particles))
 
+simulation_params_obj = simulation_params(
+  particle_radius,
+  particle_mass,
+  grav_constant,
+  lennard_jones_well_depth,
+  linear_damping_strength,
+  time_step,
+  num_steps,
+  csv_file_skip_steps,
+  status_update_skip_steps,
+)
+
 for i in range(1, num_steps // csv_file_skip_steps + 1):
   if i % (status_update_skip_steps // csv_file_skip_steps) == 0:
     print(f'Calculating state {i * csv_file_skip_steps}...')
   current_time = time_step * i
   for i in range(csv_file_skip_steps):
-    particles = simulate_tick(particles, time_step)
+    particles = simulate_tick(particles, simulation_params_obj)
   recorded_states.append(system_state(current_time, particles))
 
 print('Saving to csv file...')
