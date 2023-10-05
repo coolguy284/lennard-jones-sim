@@ -263,24 +263,26 @@ print('Recording initial state...')
 recorded_states.append(system_state(0, particles))
 
 simulation_params_obj = simulation_params(
-  particle_radius,
-  particle_mass,
-  grav_constant,
-  lennard_jones_well_depth,
-  linear_damping_strength,
-  time_step,
-  num_steps,
-  csv_file_skip_steps,
-  status_update_skip_steps,
+  particle_radius = particle_radius,
+  particle_mass = particle_mass,
+  grav_constant = grav_constant,
+  lennard_jones_well_depth = lennard_jones_well_depth,
+  linear_damping_strength = linear_damping_strength,
+  time_step = time_step,
+  num_steps = num_steps,
+  csv_file_skip_steps = csv_file_skip_steps,
+  status_update_skip_steps = status_update_skip_steps,
 )
 
+print('Calculating...')
+
 for i in range(1, num_steps // csv_file_skip_steps + 1):
-  if i % (status_update_skip_steps // csv_file_skip_steps) == 0:
-    print(f'Calculating state {i * csv_file_skip_steps}...')
   current_time = time_step * i
-  for i in range(csv_file_skip_steps):
+  for _ in range(csv_file_skip_steps):
     particles = simulate_tick(particles, simulation_params_obj)
   recorded_states.append(system_state(current_time, particles))
+  if i % (status_update_skip_steps // csv_file_skip_steps) == 0:
+    print(f'Calculated state {i * csv_file_skip_steps}/{num_steps}')
 
 print('Saving to csv file...')
 
