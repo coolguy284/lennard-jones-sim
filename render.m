@@ -5,9 +5,10 @@ close all
 
 % Constants
 initial_cols = 1;
+time_delay = 0.01;
 
 % Load in table
-recorded_states = readtable('calculations_1.csv');
+recorded_states = readtable('data/calculations_1.csv');
 
 % Get rows and cols of table for later
 [rows, cols] = size(recorded_states);
@@ -22,7 +23,7 @@ recorded_states{:,initial_cols + 1:cols} = ...
 % 'plot'
 mode = 'plot';
 
-for row = 1:1:1
+for row = 1:1:rows
     for col = initial_cols + 1:3:cols
         switch mode
             case 'print'
@@ -35,6 +36,9 @@ for row = 1:1:1
                 y_positions = recorded_states{row,initial_cols + 2:3:cols};
                 z_positions = recorded_states{row,initial_cols + 3:3:cols};
                 plot3(x_positions, y_positions, z_positions, 'o');
+                title(sprintf('Time: %f', recorded_states{row,1}));
         end
     end
+
+    pause(time_delay);
 end
