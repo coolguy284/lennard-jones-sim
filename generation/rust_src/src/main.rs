@@ -14,6 +14,18 @@ use crate::simulation::simulate_tick;
 // mass = 4.002 602 mass units; one dalton (atomic mass unit) is 1.660 539 066 60e-27; so mass is 6.646476989051294e-27 kg
 // constants defined in perform_simulation_run
 
+// in python, a float in range 1e-5 <= x < 1e16 or the number zero will be formatted in fixed point notation, otherwise scientific notation is used
+fn format_float_python_style(value: f64) -> String {
+  let value_mag = value.abs();
+  if value_mag >= 1e-5 && value_mag < 1e16 || value == 0.0 {
+    // default formatting (fixed point) on numbers in range
+    format!("{}", value)
+  } else {
+    // scientific on numbers outside range
+    format!("{:e}", value)
+  }
+}
+
 fn get_particle_string(recorded_states: &Vec<SystemState>) -> String {
   // figure out column headers
   
@@ -41,15 +53,15 @@ fn get_particle_string(recorded_states: &Vec<SystemState>) -> String {
   for state in recorded_states {
     let mut file_line = Vec::<String>::new();
     
-    file_line.push(format!("{}", state.time));
+    file_line.push(format_float_python_style(state.time));
     
     for particle_obj in &state.particles {
-      file_line.push(format!("{}", particle_obj.x));
-      file_line.push(format!("{}", particle_obj.y));
-      file_line.push(format!("{}", particle_obj.z));
-      file_line.push(format!("{}", particle_obj.dx));
-      file_line.push(format!("{}", particle_obj.dy));
-      file_line.push(format!("{}", particle_obj.dz));
+      file_line.push(format_float_python_style(particle_obj.x));
+      file_line.push(format_float_python_style(particle_obj.y));
+      file_line.push(format_float_python_style(particle_obj.z));
+      file_line.push(format_float_python_style(particle_obj.dx));
+      file_line.push(format_float_python_style(particle_obj.dy));
+      file_line.push(format_float_python_style(particle_obj.dz));
     }
     
     file_lines.push(file_line.join(","));
