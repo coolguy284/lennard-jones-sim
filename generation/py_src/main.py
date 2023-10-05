@@ -92,7 +92,7 @@ def perform_simulation_run(run_number, file_name, force_rerun = False):
       particle_mass = particle_mass,
       grav_constant = grav_constant,
       lennard_jones_well_depth = lennard_jones_well_depth,
-      linear_damping_strength = linear_damping_strength,
+      linear_damping_strength = 0.95,
       time_step = time_step,
       num_steps = num_steps,
       particle_configuration = 1,
@@ -105,7 +105,7 @@ def perform_simulation_run(run_number, file_name, force_rerun = False):
       particle_mass = particle_mass,
       grav_constant = grav_constant,
       lennard_jones_well_depth = lennard_jones_well_depth,
-      linear_damping_strength = linear_damping_strength,
+      linear_damping_strength = 0.95,
       time_step = time_step,
       num_steps = num_steps,
       particle_configuration = 1,
@@ -118,7 +118,7 @@ def perform_simulation_run(run_number, file_name, force_rerun = False):
       particle_mass = particle_mass,
       grav_constant = grav_constant,
       lennard_jones_well_depth = lennard_jones_well_depth,
-      linear_damping_strength = linear_damping_strength,
+      linear_damping_strength = 0.95,
       time_step = time_step,
       num_steps = num_steps,
       particle_configuration = 3,
@@ -131,7 +131,7 @@ def perform_simulation_run(run_number, file_name, force_rerun = False):
       particle_mass = particle_mass,
       grav_constant = grav_constant,
       lennard_jones_well_depth = lennard_jones_well_depth,
-      linear_damping_strength = linear_damping_strength,
+      linear_damping_strength = 0.95,
       time_step = time_step * 3,
       num_steps = num_steps,
       particle_configuration = 3,
@@ -144,7 +144,33 @@ def perform_simulation_run(run_number, file_name, force_rerun = False):
       particle_mass = particle_mass,
       grav_constant = grav_constant,
       lennard_jones_well_depth = lennard_jones_well_depth,
-      linear_damping_strength = linear_damping_strength,
+      linear_damping_strength = 0.95,
+      time_step = time_step,
+      num_steps = num_steps * 60,
+      particle_configuration = 3,
+      csv_file_skip_steps = 10,
+      status_update_skip_steps = 10,
+    )
+  elif run_number == 7:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_strength = 0.997,
+      time_step = time_step,
+      num_steps = num_steps * 60,
+      particle_configuration = 3,
+      csv_file_skip_steps = 10,
+      status_update_skip_steps = 10,
+    )
+  elif run_number == 8:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_strength = 1,
       time_step = time_step,
       num_steps = num_steps * 60,
       particle_configuration = 3,
@@ -199,3 +225,5 @@ perform_simulation_run(3, 'lennard_jones_3x3x3')
 perform_simulation_run(4, 'lennard_jones_7x7x7')
 perform_simulation_run(5, 'lennard_jones_7x7x7_coarse')
 perform_simulation_run(6, 'lennard_jones_7x7x7_long')
+perform_simulation_run(7, 'lennard_jones_7x7x7_long_lightdamped')
+perform_simulation_run(8, 'lennard_jones_7x7x7_long_undamped')
