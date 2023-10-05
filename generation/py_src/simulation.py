@@ -57,11 +57,11 @@ def simulate_tick(particles, simulation_params_obj):
   for i in range(len(particles)):
     particle_obj = particles[i]
     
-    # for every other particle in front of this particle
+    # for every particle in front of this particle
     for j in range(i + 1, len(particles)):
-      # calculate distance to particle
       particle_two_obj = particles[j]
       
+      # calculate distance to particle
       distance_squared = particle_obj.distance_to_squared(particle_two_obj)
       distance = distance_squared ** 0.5
       
@@ -98,7 +98,6 @@ def simulate_tick(particles, simulation_params_obj):
   
   # apply linear damping
   if simulation_params_obj.linear_damping_strength != 1:
-    # apply velocity
     for i in range(len(new_particles)):
       particle_obj = new_particles[i]
       

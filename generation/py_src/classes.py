@@ -23,16 +23,16 @@ class particle:
     multiplication_const = 1 / distance * length if distance != 0 else 0
     
     return (
-      -(other.x - self.x) * multiplication_const,
-      -(other.y - self.y) * multiplication_const,
-      -(other.z - self.z) * multiplication_const
+      (self.x - other.x) * multiplication_const,
+      (self.y - other.y) * multiplication_const,
+      (self.z - other.z) * multiplication_const
     )
   
   def apply_velocity(self, dx, dy, dz, time_step):
     return particle(
-      self.x + self.dx * time_step,
-      self.y + self.dy * time_step,
-      self.z + self.dz * time_step,
+      self.x + dx * time_step,
+      self.y + dy * time_step,
+      self.z + dz * time_step,
       self.dx,
       self.dy,
       self.dz

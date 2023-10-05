@@ -10,9 +10,6 @@ from simulation import *
 # mass = 4.002 602 mass units; one dalton (atomic mass unit) is 1.660 539 066 60e-27; so mass is 6.646476989051294e-27 kg
 # constants defined in perform_simulation_run
 
-# change directory to program's path
-chdir(sys.path[0])
-
 testing = False
 
 def get_particle_string(recorded_states):
@@ -141,6 +138,19 @@ def perform_simulation_run(run_number, file_name, force_rerun = False):
       csv_file_skip_steps = 10,
       status_update_skip_steps = 10,
     )
+  elif run_number == 6:
+    simulation_params_obj = simulation_params(
+      particle_radius = particle_radius,
+      particle_mass = particle_mass,
+      grav_constant = grav_constant,
+      lennard_jones_well_depth = lennard_jones_well_depth,
+      linear_damping_strength = linear_damping_strength,
+      time_step = time_step,
+      num_steps = num_steps * 60,
+      particle_configuration = 3,
+      csv_file_skip_steps = 10,
+      status_update_skip_steps = 10,
+    )
 
   print('Creating particles...')
 
@@ -180,8 +190,12 @@ if testing:
   print(particle_one.vector_away_from_other(particle_two, 2.0))
   exit()
 
+# change directory to program's path
+chdir(sys.path[0])
+
 perform_simulation_run(1, 'moving_right')
 perform_simulation_run(2, 'gravity')
 perform_simulation_run(3, 'lennard_jones_3x3x3')
 perform_simulation_run(4, 'lennard_jones_7x7x7')
 perform_simulation_run(5, 'lennard_jones_7x7x7_coarse')
+perform_simulation_run(6, 'lennard_jones_7x7x7_long')
