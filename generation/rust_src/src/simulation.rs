@@ -88,45 +88,58 @@ pub fn simulate_tick(particles: &Vec<Particle>, simulation_params_obj: &Simulati
   let mut new_particles = particles.to_vec();
   
   // calculate forces
-  for i in 0..particles.len() {
-    let particle_obj = &particles[i];
-    
-    // for every particle in front of this particle
-    for j in i + 1..particles.len() {
-      let particle_two_obj = &particles[j];
+  if simulation_params_obj.grav_constant != 0.0 || simulation_params_obj.lennard_jones_well_depth != 0.0 {
+    for i in 0..particles.len() {
+      let particle_obj = &particles[i];
       
-      // calculate distance to particle
-      let distance_squared = particle_obj.distance_to_squared(&particle_two_obj);
-      let distance = f64::sqrt(distance_squared);
-      
-      // calculate strength of gravitational force
-      let gravity_strength = if distance_squared != 0.0 {
-        simulation_params_obj.grav_constant * simulation_params_obj.particle_mass * simulation_params_obj.particle_mass / distance_squared
-      } else {
-        0.0
-      };
-      
-      // calculate strength of lennard jones force
-      // potential energy is 4 * lennard_jones_well_depth * ((particle_radius / distance) ^ 12 - (particle_radius / distance) ^ 6)
-      // force is -1 * 4 * lennard_jones_well_depth * (12 * (particle_radius / distance) ^ 11 * (-particle_radius / distance^2) - 6 * (particle_radius / distance) ^ 5 * (-particle_radius / distance^2))
-      let rescaled_distance = simulation_params_obj.particle_radius / distance;
-      let rescaled_distance_d_dx = -simulation_params_obj.particle_radius / (distance * distance);
-      
-      let lennard_jones_strength = -1.0 * 4.0 * simulation_params_obj.lennard_jones_well_depth * (12.0 * f64::powf(rescaled_distance, 11.0) * rescaled_distance_d_dx - 6.0 * f64::powf(rescaled_distance, 5.0) * rescaled_distance_d_dx);
-      
-      // calculate total radial force (negative is towards, positive is away)
-      let radial_force = -gravity_strength + lennard_jones_strength;
-      
-      // calculate radial force
-      let particle_one_accel = radial_force / simulation_params_obj.particle_mass;
-      let particle_two_accel = radial_force / simulation_params_obj.particle_mass;
-      
-      let particle_one_accel_vector = particle_obj.vector_away_from_other(&particle_two_obj, particle_one_accel);
-      let particle_two_accel_vector = particle_two_obj.vector_away_from_other(&particle_obj, particle_two_accel);
-      
-      // apply radial force
-      new_particles[i] = new_particles[i].apply_acceleration(particle_one_accel_vector.0, particle_one_accel_vector.1, particle_one_accel_vector.2, simulation_params_obj.time_step);
-      new_particles[j] = new_particles[j].apply_acceleration(particle_two_accel_vector.0, particle_two_accel_vector.1, particle_two_accel_vector.2, simulation_params_obj.time_step);
+      // for every particle in front of this particle
+      for j in i + 1..particles.len() {
+        let particle_two_obj = &particles[j];
+        
+        // calculate distance to particle
+        let distance_squared = particle_obj.distance_to_squared(&particle_two_obj);
+        let distance = f64::sqrt(distance_squared);
+        
+        // only calculate force if distance is not zero
+        let radial_force = if distance_squared != 0.0 {
+          // calculate strength of gravitational force
+          let gravity_strength = if simulation_params_obj.grav_constant != 0.0 {
+            simulation_params_obj.grav_constant * simulation_params_obj.particle_mass * simulation_params_obj.particle_mass / distance_squared
+          } else {
+            0.0
+          };
+          
+          // calculate strength of lennard jones force
+          // potential energy is 4 * lennard_jones_well_depth * ((particle_radius / distance) ^ 12 - (particle_radius / distance) ^ 6)
+          // force is -1 * 4 * lennard_jones_well_depth * (12 * (particle_radius / distance) ^ 11 * (-particle_radius / distance^2) - 6 * (particle_radius / distance) ^ 5 * (-particle_radius / distance^2))
+          let lennard_jones_strength;
+          
+          if simulation_params_obj.lennard_jones_well_depth != 0.0 {
+            let rescaled_distance = simulation_params_obj.particle_radius / distance;
+            let rescaled_distance_d_dx = -simulation_params_obj.particle_radius / (distance * distance);
+            
+            lennard_jones_strength = -1.0 * 4.0 * simulation_params_obj.lennard_jones_well_depth * (12.0 * f64::powf(rescaled_distance, 11.0) * rescaled_distance_d_dx - 6.0 * f64::powf(rescaled_distance, 5.0) * rescaled_distance_d_dx);
+          } else {
+            lennard_jones_strength = 0.0;
+          }
+          
+          // calculate total radial force (negative is towards, positive is away)
+          -gravity_strength + lennard_jones_strength
+        } else {
+          0.0
+        };
+        
+        // calculate radial force
+        let particle_one_accel = radial_force / simulation_params_obj.particle_mass;
+        let particle_two_accel = radial_force / simulation_params_obj.particle_mass;
+        
+        let particle_one_accel_vector = particle_obj.vector_away_from_other(&particle_two_obj, particle_one_accel);
+        let particle_two_accel_vector = particle_two_obj.vector_away_from_other(&particle_obj, particle_two_accel);
+        
+        // apply radial force
+        new_particles[i] = new_particles[i].apply_acceleration(particle_one_accel_vector.0, particle_one_accel_vector.1, particle_one_accel_vector.2, simulation_params_obj.time_step);
+        new_particles[j] = new_particles[j].apply_acceleration(particle_two_accel_vector.0, particle_two_accel_vector.1, particle_two_accel_vector.2, simulation_params_obj.time_step);
+      }
     }
   }
   

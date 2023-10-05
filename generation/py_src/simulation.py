@@ -54,41 +54,52 @@ def simulate_tick(particles, simulation_params_obj):
   new_particles = list(particles)
   
   # calculate forces
-  for i in range(len(particles)):
-    particle_obj = particles[i]
-    
-    # for every particle in front of this particle
-    for j in range(i + 1, len(particles)):
-      particle_two_obj = particles[j]
+  if simulation_params_obj.grav_constant != 0 or simulation_params.lennard_jones_well_depth != 0:
+    for i in range(len(particles)):
+      particle_obj = particles[i]
       
-      # calculate distance to particle
-      distance_squared = particle_obj.distance_to_squared(particle_two_obj)
-      distance = distance_squared ** 0.5
-      
-      # calculate strength of gravitational force
-      gravity_strength = simulation_params_obj.grav_constant * simulation_params_obj.particle_mass * simulation_params_obj.particle_mass / distance_squared if distance_squared != 0 else 0
-      
-      # calculate strength of lennard jones force
-      # potential energy is 4 * lennard_jones_well_depth * ((particle_radius / distance) ^ 12 - (particle_radius / distance) ^ 6)
-      # force is -1 * 4 * lennard_jones_well_depth * (12 * (particle_radius / distance) ^ 11 * (-particle_radius / distance^2) - 6 * (particle_radius / distance) ^ 5 * (-particle_radius / distance^2))
-      rescaled_distance = simulation_params_obj.particle_radius / distance
-      rescaled_distance_d_dx = -simulation_params_obj.particle_radius / distance ** 2
-      
-      lennard_jones_strength = -1 * 4 * simulation_params_obj.lennard_jones_well_depth * (12 * rescaled_distance ** 11 * rescaled_distance_d_dx - 6 * rescaled_distance ** 5 * rescaled_distance_d_dx)
-      
-      # calculate total radial force (negative is towards, positive is away)
-      radial_force = -gravity_strength + lennard_jones_strength
-      
-      # calculate radial force
-      particle_one_accel = radial_force / simulation_params_obj.particle_mass
-      particle_two_accel = radial_force / simulation_params_obj.particle_mass
-      
-      particle_one_accel_vector = particle_obj.vector_away_from_other(particle_two_obj, particle_one_accel)
-      particle_two_accel_vector = particle_two_obj.vector_away_from_other(particle_obj, particle_two_accel)
-      
-      # apply radial force
-      new_particles[i] = new_particles[i].apply_acceleration(*particle_one_accel_vector, simulation_params_obj.time_step)
-      new_particles[j] = new_particles[j].apply_acceleration(*particle_two_accel_vector, simulation_params_obj.time_step)
+      # for every particle in front of this particle
+      for j in range(i + 1, len(particles)):
+        particle_two_obj = particles[j]
+        
+        # calculate distance to particle
+        distance_squared = particle_obj.distance_to_squared(particle_two_obj)
+        distance = distance_squared ** 0.5
+        
+        # only calculate force if distance is not zero
+        if distance_squared != 0.0:
+          # calculate strength of gravitational force
+          if simulation_params_obj.grav_constant != 0:
+            gravity_strength = simulation_params_obj.grav_constant * simulation_params_obj.particle_mass * simulation_params_obj.particle_mass / distance_squared
+          else:
+            gravity_strength = 0
+          
+          # calculate strength of lennard jones force
+          # potential energy is 4 * lennard_jones_well_depth * ((particle_radius / distance) ^ 12 - (particle_radius / distance) ^ 6)
+          # force is -1 * 4 * lennard_jones_well_depth * (12 * (particle_radius / distance) ^ 11 * (-particle_radius / distance^2) - 6 * (particle_radius / distance) ^ 5 * (-particle_radius / distance^2))
+          if simulation_params_obj.lennard_jones_well_depth != 0:
+            rescaled_distance = simulation_params_obj.particle_radius / distance
+            rescaled_distance_d_dx = -simulation_params_obj.particle_radius / distance ** 2
+            
+            lennard_jones_strength = -1 * 4 * simulation_params_obj.lennard_jones_well_depth * (12 * rescaled_distance ** 11 * rescaled_distance_d_dx - 6 * rescaled_distance ** 5 * rescaled_distance_d_dx)
+          else:
+            lennard_jones_strength = 0
+          
+          # calculate total radial force (negative is towards, positive is away)
+          radial_force = -gravity_strength + lennard_jones_strength
+        else:
+          radial_force = 0
+        
+        # calculate radial force
+        particle_one_accel = radial_force / simulation_params_obj.particle_mass
+        particle_two_accel = radial_force / simulation_params_obj.particle_mass
+        
+        particle_one_accel_vector = particle_obj.vector_away_from_other(particle_two_obj, particle_one_accel)
+        particle_two_accel_vector = particle_two_obj.vector_away_from_other(particle_obj, particle_two_accel)
+        
+        # apply radial force
+        new_particles[i] = new_particles[i].apply_acceleration(*particle_one_accel_vector, simulation_params_obj.time_step)
+        new_particles[j] = new_particles[j].apply_acceleration(*particle_two_accel_vector, simulation_params_obj.time_step)
   
   # apply velocity
   for i in range(len(new_particles)):
