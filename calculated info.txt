@@ -1,3 +1,5 @@
+Furthest Particle From Origin Distance
+
 Energy - KE, GPE, LJPE
 Momentum - total momentum
 COM - pos, vel, acc

@@ -1,5 +1,5 @@
 % Clear vars
-clear
+%clear
 clc
 close all
 
@@ -11,7 +11,7 @@ bound_limits = [-3, 3];
 
 % Load in table
 if ~exist('recorded_states', 'var')
-    recorded_states = readtable('data/calculations_11_lennard_jones_7x7x7_long_verylightdamped_accurate.csv');
+    recorded_states = readtable('data/calculations_14_lennard_jones_7x7x7_long_lightdamped_accurate_insanegravity.csv');
     
     % Get rows and cols of table for later
     [rows, cols] = size(recorded_states);
@@ -27,7 +27,7 @@ end
 % 'plot'
 mode = 'plot';
 
-for row = 1:1:rows
+for row = 1:5:rows
     switch mode
         case 'print'
             for col = initial_cols + 1:particle_state_length:cols

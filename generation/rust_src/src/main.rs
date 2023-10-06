@@ -240,11 +240,53 @@ fn perform_simulation_run(run_number: u64, file_name: String, force_rerun: Optio
         particle_mass,
         grav_constant,
         lennard_jones_well_depth,
-        linear_damping_multiplier: 0.9998,
+        linear_damping_multiplier: 0.9995,
         time_step: time_step / 10.0,
         num_steps: num_steps * 250,
         particle_configuration: 3,
         csv_file_skip_steps: 20,
+        status_update_skip_steps: 100,
+      }
+    }
+    12 => {
+      SimulationParams {
+        particle_radius,
+        particle_mass,
+        grav_constant: grav_constant * 50.0,
+        lennard_jones_well_depth,
+        linear_damping_multiplier: 0.997,
+        time_step: time_step / 10.0,
+        num_steps: num_steps * 200,
+        particle_configuration: 3,
+        csv_file_skip_steps: 100,
+        status_update_skip_steps: 100,
+      }
+    }
+    13 => {
+      SimulationParams {
+        particle_radius,
+        particle_mass,
+        grav_constant: grav_constant * 900.0,
+        lennard_jones_well_depth,
+        linear_damping_multiplier: 0.997,
+        time_step: time_step / 10.0,
+        num_steps: num_steps * 200,
+        particle_configuration: 3,
+        csv_file_skip_steps: 100,
+        status_update_skip_steps: 100,
+      }
+    }
+    14 => {
+      SimulationParams {
+        particle_radius,
+        particle_mass,
+        grav_constant: grav_constant * 50000.0,
+        lennard_jones_well_depth,
+        linear_damping_multiplier: 0.997,
+        time_step: time_step / 10.0,
+        num_steps: num_steps * 200,
+        particle_configuration: 3,
+        csv_file_skip_steps: 100,
         status_update_skip_steps: 100,
       }
     }
@@ -328,4 +370,7 @@ fn main() {
   perform_simulation_run(9, "lennard_jones_7x7x7_long_undamped_accurate".to_string(), None);
   perform_simulation_run(10, "lennard_jones_7x7x7_long_lightdamped_accurate".to_string(), None);
   perform_simulation_run(11, "lennard_jones_7x7x7_long_verylightdamped_accurate".to_string(), None);
+  perform_simulation_run(12, "lennard_jones_7x7x7_long_lightdamped_accurate_highgravity".to_string(), None);
+  perform_simulation_run(13, "lennard_jones_7x7x7_long_lightdamped_accurate_extremegravity".to_string(), None);
+  perform_simulation_run(14, "lennard_jones_7x7x7_long_lightdamped_accurate_insanegravity".to_string(), None);
 }
