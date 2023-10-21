@@ -9,6 +9,8 @@ Internal KE per capita (subtract COM vel / divide by num of particles)
 Rotation Speed
 Rotation Acceleration (should be 0?)
 Angular Momentum
+Rotational Kinetic Energy (DO NOT sum in to total energy)
+Maybe a Strictly Translational Kinetic Energy (just subtract the 2)
 
 
 program stats:
