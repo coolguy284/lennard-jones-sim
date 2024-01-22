@@ -1,0 +1,6 @@
+low prio:
+use `clf` in the matlab plot of lennard jones sim after each frame
+ensure rust ver of lennard jones sim calculation (and non rust ver) has simulationManager class with simulate func and so on
+simulationParams class should have subcomponents, PhysicalConstants, SimulationConstants (timestep and stuff), and InitialState
+  and you pass the params to initalize method on simulator
+  maybe it even has a simulateandsavetofile method that accepts an Option lambda for status printing
